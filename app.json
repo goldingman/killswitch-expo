@@ -2,6 +2,8 @@
   "expo": {
     "name": "killswitch",
     "slug": "killswitch",
+    "scheme": "killswitch",
+    "owner": "goldingman",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -13,19 +15,32 @@
       "backgroundColor": "#ffffff"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "googleServicesFile": "./GoogleService-Info.plist",
+      "bundleIdentifier": "com.killswitch"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "googleServicesFile": "./google-services.json",
+      "package": "com.killswitch"
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
+    "extra": {
+      "googleClientId": "193918051508-a9o0j3j6u62envb7fbfcsin547f744l2.apps.googleusercontent.com"
+    },
     "plugins": [
-      "expo-router"
+      "expo-router",
+      [
+        "expo-document-picker",
+        {
+          "iCloudContainerEnvironment": "Production"
+        }
+      ]
     ]
   }
 }
