@@ -8,6 +8,8 @@ export const fileSlice = createSlice({
         type: "",
         path: "",
         folders: [],
+        files: [],
+        sharedFiles: [],
     },
     reducers: {
         setFile: (state, action) => {
@@ -25,9 +27,16 @@ export const fileSlice = createSlice({
         setFolders: (state, action) => {
             state.folders = action.payload;
         },
+        setFiles: (state, action) => {
+            state.files = action.payload;
+        },
+        setSharedFiles: (state, action) => {
+            state.sharedFiles = action.payload;
+        },
     },
 });
 
-export const { setFile, clearFile, setFolders } = fileSlice.actions;
+export const { setFile, clearFile, setFolders, setFiles, setSharedFiles } =
+    fileSlice.actions;
 
 export default fileSlice.reducer;

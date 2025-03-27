@@ -21,41 +21,27 @@ export default function SignupScreen({ navigation }) {
     const { theme } = useTheme();
     const dispatch = useDispatch();
     const [checked, setChecked] = useState(false);
-    const [error, setError] = useState(false);
+    const [username, setUsername] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
 
     const goSignup = () => {
-        if (
-            password !== confirmPassword ||
-            password.length < 6 ||
-            !validateEmail(email)
-        ) {
-            return;
-        }
-
         signup(dispatch, {
-            username: email,
+            username: username,
             email: email,
+            my_gid: "gid",
             password: password,
         })
             .then((res) => {
-                if (res) {
-                    navigation.navigate("login");
-                } else {
-                    Toast.show({
-                        type: "error",
-                        text1: "Error",
-                        text2: "Something went wrong",
-                    });
-                }
+                navigation.navigate("HomeNav");
             })
             .catch((err) => {
+                console.log("err : ", err);
                 Toast.show({
                     type: "error",
                     text1: "Error",
-                    text2: err,
+                    text2: "Something went wrong",
                 });
             });
     };
@@ -67,18 +53,24 @@ export default function SignupScreen({ navigation }) {
     return (
         <View style={styles.container}>
             <View style={styles.body}>
-                {/* <Image
-                    source={require("../assets/appname.png")}
-                    style={{ width: 160, height: 60, resizeMode: "contain" }}
-                /> */}
                 <Text h2>Sign Up</Text>
                 <Text style={styles.text}>Thanks for reaching out to us.</Text>
+                <Input
+                    placeholder="Username"
+                    value={username}
+                    errorMessage={
+                        username.length < 4
+                            ? "Username length should be at least 4"
+                            : null
+                    }
+                    onChangeText={setUsername}
+                />
                 <Input
                     placeholder="Email"
                     value={email}
                     errorMessage={
                         !validateEmail(email)
-                            ? "Please enter a valid email"
+                            ? "Please enter a valid gmail"
                             : null
                     }
                     onChangeText={setEmail}
@@ -128,30 +120,42 @@ export default function SignupScreen({ navigation }) {
                             </Text>
                         </Text>
                     </View>
-
-                    <Button size="md" onPress={goLogin}>
-                        Sign In
-                    </Button>
-                    <Divider style={[STYLES.mv12, STYLES.mh12]} />
                     <Button
                         size="md"
                         type="clear"
                         onPress={goSignup}
                         disabled={
-                            !checked || !email || !password || !confirmPassword
+                            !checked ||
+                            !validateEmail(email) ||
+                            password.length < 6 ||
+                            password !== confirmPassword ||
+                            username.length < 4
                         }
                         containerStyle={{
                             backgroundColor:
                                 !checked ||
-                                !email ||
-                                !password ||
-                                !confirmPassword
+                                !validateEmail(email) ||
+                                password.length < 6 ||
+                                password !== confirmPassword ||
+                                username.length < 4
                                     ? theme.colors.grey5
                                     : theme.colors.grey0,
                         }}
                         color={theme.colors.greyOutline}
                     >
                         Sign Up
+                    </Button>
+                    <Divider style={[STYLES.mv12, STYLES.mh12]} />
+                    <Button
+                        type="clear"
+                        size="md"
+                        onPress={goLogin}
+                        containerStyle={{
+                            borderWidth: 1,
+                            borderColor: theme.colors.greyOutline,
+                        }}
+                    >
+                        Go back
                     </Button>
                 </View>
             </View>

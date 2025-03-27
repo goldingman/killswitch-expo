@@ -1,130 +1,42 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { FlatList, TouchableOpacity, View } from "react-native";
 import { makeStyles, Text, useTheme } from "@rneui/themed";
 import { useDispatch, useSelector } from "react-redux";
 import AntDesign from "@expo/vector-icons/AntDesign";
-import { downloadFile, getFolders } from "../redux/actions/fileAction";
+import { getFolders } from "../redux/actions/fileAction";
 import Toast from "react-native-toast-message";
-import { getIcon } from "../utils/get_icon";
-import * as FileSystem from "expo-file-system";
-import * as Progress from "react-native-progress";
-import * as Sharing from "expo-sharing";
+import { shortName } from "../utils/shortName";
 
 export default function HomeScreen({ navigation }) {
     const styles = useStyles();
     const { theme } = useTheme();
     const dispatch = useDispatch();
     const folders = useSelector((state) => state.file.folders);
-    const [progress, setProgress] = useState(0);
-    const [downloadID, setDownloadID] = useState(null);
+    const user = useSelector((state) => state.auth.user);
 
     useEffect(() => {
-        getFolders(dispatch)
-            .then((res) => {})
-            .catch((err) => {
-                console.log("err : ", err);
-                Toast.show({
-                    type: "error",
-                    text1: "Error",
-                    text2: err,
+        if (user) {
+            getFolders(dispatch, { user_id: user.id, my_gid: user.my_gid })
+                .then((res) => {})
+                .catch((err) => {
+                    Toast.show({
+                        type: "error",
+                        text1: "Error",
+                        text2: err,
+                    });
                 });
-            });
-    }, [navigation]);
-
-    const saveToGallery = async (uri) => {
-        if (await Sharing.isAvailableAsync()) {
-            await Sharing.shareAsync(uri);
         }
-        // const { status } = await MediaLibrary.requestPermissionsAsync();
-        // if (status !== "granted") {
-        //     alert("Permission required to save file");
-        //     return;
-        // }
+    }, [navigation, user]);
 
-        // try {
-        //     const asset = await MediaLibrary.createAssetAsync(uri);
-        //     await MediaLibrary.createAlbumAsync(
-        //         "Download_Killswitch",
-        //         asset,
-        //         false
-        //     );
-        //     alert("Saved to Downloads or Gallery!");
-        // } catch (e) {
-        //     console.error("Saving failed:", e);
-        // }
-    };
-
-    const getFile = async (fileId, fileName) => {
-        setDownloadID(fileId);
-        setProgress(0);
-        const downloadUrl = `http://localhost:8000/service/files/download/${fileId}`;
-        const fileUri = FileSystem.documentDirectory + fileName;
-
-        const callback = (downloadProgress) => {
-            const progressFraction =
-                downloadProgress.totalBytesWritten /
-                downloadProgress.totalBytesExpectedToWrite;
-            console.log("progress : ", progressFraction);
-            setProgress(progressFraction);
-        };
-
-        const downloadResumable = FileSystem.createDownloadResumable(
-            downloadUrl,
-            fileUri,
-            {},
-            callback
-        );
-
-        downloadResumable
-            .downloadAsync()
-            .then((res) => {
-                console.log("final downloaded");
-                setProgress(1);
-                setDownloadID(null);
-                if (res.uri) {
-                    saveToGallery(res.uri);
-                }
-            })
-            .catch((err) => {
-                console.error("Download error:", err);
-                setProgress(1);
-                setDownloadID(null);
-            });
-    };
-
-    const Item = ({ id, title, type }) => (
+    const Item = ({ id, name, g_id }) => (
         <TouchableOpacity
             style={styles.listItem}
             onPress={() => {
-                if (downloadID) return;
-                if (type === "application/vnd.google-apps.folder")
-                    navigation.navigate("Folder", { id, folderName: title });
-                else getFile(id, title.replace(/\.enc$/, ""));
+                navigation.navigate("Folder", { id, name, g_id });
             }}
         >
-            {getIcon(type, theme)}
-            <Text style={styles.listText}>{title}</Text>
-            {downloadID === id && (
-                <View
-                    style={{
-                        width: 40,
-                        height: 40,
-                        position: "absolute",
-                        right: 10,
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                    }}
-                >
-                    <Progress.Circle
-                        size={30}
-                        progress={progress}
-                        indeterminate
-                        borderColor={theme.colors.primary}
-                        color={theme.colors.primary}
-                    />
-                </View>
-            )}
+            <AntDesign name="folder1" size={24} color={theme.colors.primary} />
+            <Text style={styles.listText}>{shortName(name, 43)}</Text>
         </TouchableOpacity>
     );
 
@@ -151,11 +63,7 @@ export default function HomeScreen({ navigation }) {
                 <FlatList
                     data={folders}
                     renderItem={({ item }) => (
-                        <Item
-                            id={item.id}
-                            title={item.name}
-                            type={item.mimeType}
-                        />
+                        <Item id={item.id} name={item.name} g_id={item.g_id} />
                     )}
                     keyExtractor={(item) => item.id}
                     ListFooterComponent={

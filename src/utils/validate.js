@@ -1,9 +1,7 @@
 export const validateEmail = (email) => {
-    return String(email)
-        .toLowerCase()
-        .match(
-            /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
-        );
+    const gmailRegex = /^[a-zA-Z0-9._%+-]+@gmail\.com$/;
+    // Test if the email matches the regex
+    return gmailRegex.test(email);
 };
 export const validatePassword = (password) => {
     return String(password).length >= 6;

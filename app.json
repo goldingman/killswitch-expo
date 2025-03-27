@@ -25,13 +25,20 @@
         "backgroundColor": "#ffffff"
       },
       "googleServicesFile": "./google-services.json",
-      "package": "com.killswitch"
+      "package": "com.killswitch",
+      "versionCode": 1
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
     "extra": {
-      "googleClientId": "193918051508-a9o0j3j6u62envb7fbfcsin547f744l2.apps.googleusercontent.com"
+      "googleClientId": "193918051508-a9o0j3j6u62envb7fbfcsin547f744l2.apps.googleusercontent.com",
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "0faa1e6d-3a94-453d-9ef4-c37078ac9903"
+      }
     },
     "plugins": [
       "expo-router",
@@ -42,5 +49,6 @@
         }
       ]
     ]
-  }
+  },
+  "entryPoint": "./node_modules/expo-router/entry"
 }

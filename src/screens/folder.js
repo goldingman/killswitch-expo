@@ -1,146 +1,155 @@
 import React, { useEffect, useState } from "react";
-import { FlatList, TouchableOpacity, View } from "react-native";
+import { FlatList, Platform, TouchableOpacity, View } from "react-native";
 import { makeStyles, Text, useTheme } from "@rneui/themed";
 import { useDispatch, useSelector } from "react-redux";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import AntDesign from "@expo/vector-icons/AntDesign";
-import { downloadFile, getFiles } from "../redux/actions/fileAction";
+import {
+    clearDownload,
+    downloadFile,
+    getFiles,
+} from "../redux/actions/fileAction";
 import { getIcon } from "../utils/get_icon";
 import * as FileSystem from "expo-file-system";
-import * as MediaLibrary from "expo-media-library";
 import * as Progress from "react-native-progress";
 import * as Sharing from "expo-sharing";
+import Toast from "react-native-toast-message";
+import { shortName } from "../utils/shortName";
+import { BASE_URL } from "../server/server";
 
 export default function FolderScreen({ navigation, route }) {
     const styles = useStyles();
     const { theme } = useTheme();
     const dispatch = useDispatch();
-    const folders = useSelector((state) => state.file.folders);
+    const files = useSelector((state) => state.file.files);
+    const token = useSelector((state) => state.auth.token);
     const [folderId, setFolderId] = useState("");
     const [folderName, setFolderName] = useState("");
-    const [files, setFiles] = useState([]);
+    const [folderGId, setFolderGId] = useState("");
     const [progress, setProgress] = useState(0);
     const [downloadID, setDownloadID] = useState(null);
 
     useEffect(() => {
         if (route.params) {
             setFolderId(route.params.id);
-            setFolderName(route.params.folderName);
+            setFolderName(route.params.name);
+            setFolderGId(route.params.g_id);
         }
     }, [route, navigation]);
 
     useEffect(() => {
-        if (folderId)
-            getFiles(dispatch, folderId)
-                .then((res) => {
-                    setFiles(res);
-                })
+        if (folderGId)
+            getFiles(dispatch, folderGId)
+                .then((res) => {})
                 .catch((err) => {
-                    console.log("err : ", err);
+                    Toast.show({
+                        type: "error",
+                        text1: "Error",
+                        text2: "Failed to load files",
+                    });
                 });
-    }, [folderId]);
+    }, [folderGId]);
 
     const onUpload = () => {
-        navigation.navigate("Upload", { id: folderId });
+        navigation.navigate("Upload", {
+            id: folderId,
+            g_id: folderGId,
+            name: folderName,
+        });
     };
 
     const saveToGallery = async (uri, filename, mimeType) => {
-        // if (await Sharing.isAvailableAsync()) {
-        //     await Sharing.shareAsync(uri);
-        // }
-        console.log("mimeType : ", mimeType, filename);
-        const downloadDir =
-            FileSystem.StorageAccessFramework.getUriForDirectoryInRoot(
-                "Download/Killswitch"
-            );
-        const permission =
-            await FileSystem.StorageAccessFramework.requestDirectoryPermissionsAsync(
-                downloadDir
-            );
-        if (!permission.granted) {
-            return;
+        if (Platform.OS == "ios") {
+            if (await Sharing.isAvailableAsync()) {
+                await Sharing.shareAsync(uri);
+            }
+        } else {
+            const downloadDir =
+                FileSystem.StorageAccessFramework.getUriForDirectoryInRoot(
+                    "Download"
+                );
+            const permission =
+                await FileSystem.StorageAccessFramework.requestDirectoryPermissionsAsync(
+                    downloadDir
+                );
+            console.log("permission : ", uri, filename, mimeType);
+            if (!permission.granted) {
+                return;
+            }
+            console.log("destinationUri : ", destinationUri);
+            const destinationUri =
+                await FileSystem.StorageAccessFramework.createFileAsync(
+                    permission.directoryUri,
+                    filename,
+                    mimeType
+                );
+            const contents =
+                await FileSystem.StorageAccessFramework.readAsStringAsync(uri, {
+                    encoding: FileSystem.EncodingType.Base64,
+                });
+
+            const resp =
+                await FileSystem.StorageAccessFramework.writeAsStringAsync(
+                    destinationUri,
+                    contents,
+                    { encoding: FileSystem.EncodingType.Base64 }
+                );
+            console.log("res : ", resp);
         }
-        console.log("permission : ", permission, downloadDir);
-        const destinationUri =
-            await FileSystem.StorageAccessFramework.createFileAsync(
-                permission.directoryUri,
-                filename,
-                mimeType
-            );
-        console.log("destinationUri : ", destinationUri);
-        const contents =
-            await FileSystem.StorageAccessFramework.readAsStringAsync(uri, {
-                encoding: FileSystem.EncodingType.Base64,
-            });
-
-        const resp = await FileSystem.StorageAccessFramework.writeAsStringAsync(
-            destinationUri,
-            contents,
-            { encoding: FileSystem.EncodingType.Base64 }
-        );
-
-        // const { status } = await MediaLibrary.requestPermissionsAsync();
-        // if (status !== "granted") {
-        //     alert("Permission required to save file");
-        //     return;
-        // }
-
-        // try {
-        //     const asset = await MediaLibrary.createAssetAsync(uri);
-        //     await MediaLibrary.createAlbumAsync(
-        //         "Download_Killswitch",
-        //         asset,
-        //         false
-        //     );
-        //     alert("Saved to Downloads or Gallery!");
-        // } catch (e) {
-        //     console.error("Saving failed:", e);
-        // }
     };
 
-    const getFile = async (fileId, fileName) => {
+    const getFile = async (fileId, fileName, fileGid) => {
         setDownloadID(fileId);
         setProgress(0);
-        const downloadUrl = `http://localhost:8000/service/files/download/${fileId}`;
+        const downloadUrl = `${BASE_URL}/downloads/${fileGid}`;
         const fileUri = FileSystem.documentDirectory + fileName;
 
         const callback = (downloadProgress) => {
             const progressFraction =
                 downloadProgress.totalBytesWritten /
                 downloadProgress.totalBytesExpectedToWrite;
-            console.log("progress : ", progressFraction);
             setProgress(progressFraction);
         };
 
         const downloadResumable = FileSystem.createDownloadResumable(
             downloadUrl,
             fileUri,
-            {},
+            {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            },
             callback
         );
 
         downloadResumable
             .downloadAsync()
-            .then((res) => {
-                console.log("final downloaded : ", res);
+            .then(async (res) => {
                 setProgress(1);
                 setDownloadID(null);
+
+                clearDownload(dispatch);
+                console.log("download : ", res);
                 if (res.uri) {
                     saveToGallery(
                         res.uri,
                         fileName,
-                        res.headers["content-type"]
+                        res.headers["Content-Type"]
                     );
                 }
             })
             .catch((err) => {
-                console.error("Download error:", err);
                 setProgress(1);
                 setDownloadID(null);
+                Toast.show({
+                    type: "error",
+                    text1: "Error",
+                    text2: "Failed to download file",
+                });
             });
     };
 
-    const Item = ({ title, type, id }) => (
+    const Item = ({ title, type, id, gId }) => (
         <TouchableOpacity
             style={styles.listItem}
             onPress={() => {
@@ -148,12 +157,12 @@ export default function FolderScreen({ navigation, route }) {
                 if (type === "application/vnd.google-apps.folder") {
                     navigation.navigate("Folder", { id, folderName: title });
                 } else {
-                    getFile(id, title.replace(/\.enc$/, ""));
+                    getFile(id, title, gId);
                 }
             }}
         >
             {getIcon(type, theme)}
-            <Text style={styles.listText}>{title}</Text>
+            <Text style={styles.listText}>{shortName(title, 43)}</Text>
             {downloadID === id && (
                 <View
                     style={{
@@ -169,7 +178,6 @@ export default function FolderScreen({ navigation, route }) {
                     <Progress.Circle
                         size={30}
                         progress={progress}
-                        indeterminate
                         borderColor={theme.colors.primary}
                         color={theme.colors.primary}
                     />
@@ -208,9 +216,10 @@ export default function FolderScreen({ navigation, route }) {
                     data={files}
                     renderItem={({ item }) => (
                         <Item
-                            type={item.mimeType}
+                            type={item.file_type}
                             title={item.name}
                             id={item.id}
+                            gId={item.g_id}
                         />
                     )}
                     keyExtractor={(item) => item.id}

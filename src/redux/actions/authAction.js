@@ -1,6 +1,11 @@
 import { handleError } from "../../server/handleError";
 import SERVER from "../../server/server";
-import { setAuth, setLoading, setToken } from "../reducers/authReducer";
+import {
+    setAuth,
+    setLoading,
+    setToken,
+    setUser,
+} from "../reducers/authReducer";
 
 export const login = (dispatch, data) =>
     new Promise((resolve, reject) => {
@@ -11,16 +16,18 @@ export const login = (dispatch, data) =>
             },
         })
             .then((res) => {
+                console.log("res : ", res.data);
                 dispatch(setLoading(false));
-                dispatch(setToken(res.data.access_token));
-                dispatch(setAuth(true));
                 SERVER.defaults.headers.common[
                     "Authorization"
                 ] = `Bearer ${res.data.access_token}`;
+                dispatch(setToken(res.data.access_token));
+                dispatch(setAuth(true));
+                dispatch(setUser(res.data.data));
+
                 resolve(res.data);
             })
             .catch((err) => {
-                console.log("err : ", err);
                 dispatch(setLoading(false));
                 reject(handleError(dispatch, err));
             });
@@ -31,7 +38,28 @@ export const signup = (dispatch, data) =>
         dispatch(setLoading(true));
         SERVER.post("/register", data)
             .then((res) => {
-                dispatch(setUser(res.data));
+                dispatch(setLoading(false));
+                if (res.data.success) {
+                    SERVER.defaults.headers.common[
+                        "Authorization"
+                    ] = `Bearer ${res.data.token}`;
+                    dispatch(setUser(res.data.data));
+                    dispatch(setToken(res.data.token));
+                    dispatch(setAuth(true));
+                }
+                resolve(res.data);
+            })
+            .catch((err) => {
+                dispatch(setLoading(false));
+                reject(handleError(dispatch, err));
+            });
+    });
+
+export const getUsers = (dispatch) =>
+    new Promise((resolve, reject) => {
+        dispatch(setLoading(true));
+        SERVER.get("/users")
+            .then((res) => {
                 dispatch(setLoading(false));
                 resolve(res.data);
             })

@@ -3,7 +3,7 @@ import { Input as RNEInput, ThemeContext } from "@rneui/themed";
 
 const Input = (props) => {
     const [focused, setFocused] = useState(false);
-    const [showPasswordText, togglePasswordText] = useState(true);
+    const [showPasswordText, togglePasswordText] = useState(false);
     const { theme } = useContext(ThemeContext);
 
     const onFocus = () => {
@@ -63,7 +63,7 @@ const Input = (props) => {
             inputContainerStyle={inputContainerStyle}
             labelStyle={labelStyle}
             password={showPasswordText ? false : true}
-            secureTextEntry={showPasswordText ? false : true}
+            secureTextEntry={props.password && !showPasswordText ? true : false}
             multiline={props?.multiline}
             inputStyle={{
                 textAlignVertical: props?.multiline ? "top" : "center",

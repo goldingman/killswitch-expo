@@ -1,47 +1,78 @@
 import React, { useEffect, useState } from "react";
 import { TouchableOpacity, View } from "react-native";
 import { makeStyles, Text, Button, Divider, useTheme } from "@rneui/themed";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import Toast from "react-native-toast-message";
 import { STYLES } from "../utils/styles";
 import Input from "../components/input";
+import { DropdownComponent } from "../components/dropdown";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import * as DocumentPicker from "expo-document-picker";
 import { uploadFile } from "../redux/actions/fileAction";
+import { setFiles } from "../redux/reducers/fileReducer";
+import { getUsers } from "../redux/actions/authAction";
 
 export default function UploadScreen({ navigation, route }) {
     const styles = useStyles();
     const { theme } = useTheme();
     const dispatch = useDispatch();
-    const [email, setEmail] = useState("");
+    const files = useSelector((state) => state.file.files);
+    const user = useSelector((state) => state.auth.user);
     const [file, setFile] = useState(null);
     const [folderId, setFolderId] = useState("");
+    const [users, setUsers] = useState([]);
+    const [selectedUsers, setSelectedUsers] = useState([]);
 
     useEffect(() => {
         if (route.params) {
-            setFolderId(route.params.id);
+            setFolderId(route.params.g_id);
         }
     }, [route]);
 
+    useEffect(() => {
+        getUsers(dispatch)
+            .then((res) => {
+                const data = res
+                    .filter((u) => u.email !== user.email)
+                    .map((u) => ({
+                        label: u.email,
+                        value: u.email,
+                    }));
+                setUsers(data);
+            })
+            .catch((err) => {
+                Toast.show({
+                    type: "error",
+                    text1: "Error",
+                    text2: "Failed to fetch users",
+                });
+            });
+    }, [route]);
+
     const goUpload = () => {
-        // setMode(mode === 'dark' ? 'light' : 'dark');
-        // navigation.navigate("Signup");
-        if (!folderId || !email || !file) return;
+        if (!folderId || !selectedUsers.length || !file) return;
         uploadFile(dispatch, {
-            folderId: folderId,
-            recipients: email,
+            f_gid: folderId,
+            recipients: selectedUsers.map((item) => item).join(","),
             file: file,
         })
             .then((res) => {
-                console.log("res : ", res);
+                setSelectedUsers([]);
+                setFile(null);
+                dispatch(setFiles([...files, res]));
                 Toast.show({
                     type: "success",
                     text1: "Success",
-                    text2: res.message,
+                    text2: `Successfully uploaded ${res.name} file`,
                 });
             })
             .catch((err) => {
-                console.log("err : ", err.detail[0].loc);
+                console.log(err);
+                Toast.show({
+                    type: "error",
+                    text1: "Error",
+                    text2: "Failed uploading file",
+                });
             });
     };
 
@@ -54,7 +85,6 @@ export default function UploadScreen({ navigation, route }) {
             });
             if (result.assets && result.assets.length > 0) {
                 const picked = result.assets[0];
-                console.log("File picked:", picked);
                 setFile(picked);
             } else {
                 Toast.show({
@@ -78,8 +108,7 @@ export default function UploadScreen({ navigation, route }) {
             <View style={styles.header}>
                 <TouchableOpacity
                     onPress={() => {
-                        // navigation.goBack();
-                        navigation.navigate("HomeNav");
+                        navigation.goBack();
                     }}
                 >
                     <Ionicons
@@ -94,11 +123,13 @@ export default function UploadScreen({ navigation, route }) {
                 <View style={{ width: 24, height: 24 }}></View>
             </View>
             <View style={styles.body}>
-                <Input
-                    placeholder="Email"
-                    value={email}
-                    errorMessage={"Please input emails by comma"}
-                    onChangeText={setEmail}
+                <DropdownComponent
+                    data={users}
+                    theme={theme}
+                    value={selectedUsers}
+                    onChange={(res) => {
+                        setSelectedUsers(res);
+                    }}
                 />
                 <Input
                     placeholder="File Name"
@@ -117,12 +148,12 @@ export default function UploadScreen({ navigation, route }) {
                         onPress={goUpload}
                         containerStyle={{
                             backgroundColor:
-                                !file || !email
-                                    ? theme.colors.grey3
+                                !file || !selectedUsers.length
+                                    ? theme.colors.greyOutline
                                     : theme.colors.grey0,
                         }}
                         color={theme.colors.greyOutline}
-                        disabled={!file || !email}
+                        disabled={!file || !selectedUsers.length}
                     >
                         Upload
                     </Button>
@@ -163,7 +194,7 @@ const useStyles = makeStyles((theme) => ({
         alignItems: "center",
         justifyContent: "center",
         width: "100%",
-        paddingTop: 50,
+        paddingTop: 30,
         paddingHorizontal: theme.spacing.lg,
     },
     text: {

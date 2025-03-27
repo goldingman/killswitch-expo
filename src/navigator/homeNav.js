@@ -2,6 +2,8 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { useTheme } from "@rneui/themed";
 import HomeScreen from "../screens/home";
 import AntDesign from "@expo/vector-icons/AntDesign";
+import Entypo from "@expo/vector-icons/Entypo";
+import SharedScreen from "../screens/shared";
 
 const Tab = createBottomTabNavigator();
 
@@ -25,16 +27,16 @@ function HomeNavigator() {
                     ),
                 }}
             />
-            {/* <Tab.Screen
-                name="Analysis"
-                component={HomeScreen}
+            <Tab.Screen
+                name="Shared"
+                component={SharedScreen}
                 options={{
-                    tabBarLabel: "Analysis",
+                    tabBarLabel: "Shared",
                     tabBarIcon: ({ color, size }) => (
-                        <AntDesign name="setting" color={color} size={size} />
+                        <Entypo name="slideshare" color={color} size={size} />
                     ),
                 }}
-            /> */}
+            />
             {/* <Tab.Screen
                 name="Signed"
                 component={DealListScreen}

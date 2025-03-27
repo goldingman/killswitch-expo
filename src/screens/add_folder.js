@@ -8,7 +8,7 @@ import {
     useTheme,
     Image,
 } from "@rneui/themed";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import Toast from "react-native-toast-message";
 import { STYLES } from "../utils/styles";
 import Input from "../components/input";
@@ -17,25 +17,34 @@ import Checkbox from "expo-checkbox";
 import { login } from "../redux/actions/authAction";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { createFolder } from "../redux/actions/fileAction";
+import { setFolders } from "../redux/reducers/fileReducer";
+import SERVER from "../server/server";
 
 export default function AddFolderScreen({ navigation }) {
     const styles = useStyles();
     const { theme } = useTheme();
     const dispatch = useDispatch();
+    const user = useSelector((state) => state.auth.user);
+    const token = useSelector((state) => state.auth.token);
+    const folders = useSelector((state) => state.file.folders);
     const [folderName, setFolderName] = useState("");
 
     const goCreate = () => {
-        createFolder(dispatch, folderName)
+        createFolder(dispatch, {
+            name: folderName,
+            parent_id: user.my_gid,
+            user_id: user.id,
+        })
             .then((res) => {
                 setFolderName("");
+                dispatch(setFolders([...folders, res]));
                 Toast.show({
                     type: "success",
                     text1: "Success",
-                    text2: res.message,
+                    text2: `Folder ${folderName} created successfully.`,
                 });
             })
             .catch((err) => {
-                console.log(err.detail[0]);
                 Toast.show({
                     type: "error",
                     text1: "Error",

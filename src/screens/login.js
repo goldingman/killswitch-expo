@@ -15,6 +15,7 @@ import Input from "../components/input";
 import { validateEmail } from "../utils/validate";
 import Checkbox from "expo-checkbox";
 import { login } from "../redux/actions/authAction";
+import AppLogo from "../components/logo";
 
 export default function LoginScreen({ navigation }) {
     const styles = useStyles();
@@ -47,7 +48,6 @@ export default function LoginScreen({ navigation }) {
                 }
             })
             .catch((err) => {
-                console.log(err.detail[0]);
                 Toast.show({
                     type: "error",
                     text1: "Error",
@@ -59,12 +59,17 @@ export default function LoginScreen({ navigation }) {
     return (
         <View style={styles.container}>
             <View style={styles.body}>
-                {/* <Image
-                    source={require("../assets/appname.png")}
-                    style={{ width: 160, height: 60, resizeMode: "contain" }}
-                /> */}
-                <Text h2>Log In</Text>
-                <Text style={styles.text}>Thanks for reaching out to us.</Text>
+                <AppLogo />
+                <Text
+                    h3
+                    style={{
+                        color: theme.colors.grey1,
+                        marginTop: 30,
+                        marginBottom: 20,
+                    }}
+                >
+                    Welcome to our app!
+                </Text>
                 <Input
                     placeholder="Email"
                     value={email}
@@ -92,7 +97,7 @@ export default function LoginScreen({ navigation }) {
                         onPress={goLogin}
                         disabled={!validateEmail(email) || !password}
                     >
-                        Sign In
+                        Log In
                     </Button>
                     <Divider style={[STYLES.mv12, STYLES.mh12]} />
                     <Button
@@ -104,7 +109,7 @@ export default function LoginScreen({ navigation }) {
                         }}
                         color={theme.colors.greyOutline}
                     >
-                        Sign Up
+                        Create an account
                     </Button>
                 </View>
             </View>
