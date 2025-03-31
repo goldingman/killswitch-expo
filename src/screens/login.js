@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { View, Image } from "react-native";
 import { makeStyles, Text, Button, Divider, useTheme } from "@rneui/themed";
 import { useDispatch } from "react-redux";
@@ -6,7 +6,6 @@ import Toast from "react-native-toast-message";
 import { STYLES } from "../utils/styles";
 import Input from "../components/input";
 import { validateEmail } from "../utils/validate";
-import Checkbox from "expo-checkbox";
 import { login } from "../redux/actions/authAction";
 import AppLogo from "../../assets/icon_h.png";
 
@@ -14,8 +13,6 @@ export default function LoginScreen({ navigation }) {
     const styles = useStyles();
     const { theme } = useTheme();
     const dispatch = useDispatch();
-    const [checked, setChecked] = useState(false);
-    const [error, setError] = useState(false);
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
 
@@ -112,13 +109,6 @@ export default function LoginScreen({ navigation }) {
         </View>
     );
 }
-
-const useCustomButtonStyle = makeStyles((theme, disabled) => ({
-    titleStyle: {
-        color: disabled ? theme.colors.grey3 : theme.colors.grey0,
-        marginLeft: theme.spacing.sm,
-    },
-}));
 
 const useStyles = makeStyles((theme) => ({
     container: {

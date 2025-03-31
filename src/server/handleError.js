@@ -6,10 +6,10 @@ export const handleError = (dispatch, error) => {
         // that falls out of the range of 2xx
         // console.log("error status code : ", error.response);
         console.log(error.response);
-        // if (error.response.status === 401) {
-        //     // dispatch(setLogOut());
-        //     return "Unauthorized.";
-        // }
+        if (error.response.status === 401) {
+            dispatch(setLogOut());
+            return "Token expired.";
+        }
         if (error.response.data) {
             return error.response.data?.detail;
         } else {

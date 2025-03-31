@@ -56,6 +56,7 @@ export default function FolderScreen() {
             }
         }, [route.name])
     );
+
     useEffect(() => {
         if (route.params) {
             setFolderId(route.params.id);

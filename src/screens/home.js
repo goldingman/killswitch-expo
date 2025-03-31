@@ -16,7 +16,6 @@ import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import { setLogOut } from "../redux/reducers/authReducer";
 import SimpleLineIcons from "@expo/vector-icons/SimpleLineIcons";
 
-let gFocused = true;
 export default function HomeScreen() {
     const styles = useStyles();
     const { theme } = useTheme();
@@ -88,8 +87,9 @@ export default function HomeScreen() {
             <View style={styles.header}>
                 <TouchableOpacity
                     onPress={() => {
-                        dispatch(setLogOut());
+                        //
                         navigation.navigate("Login");
+                        // dispatch(setLogOut());
                     }}
                 >
                     <SimpleLineIcons

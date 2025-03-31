@@ -29,7 +29,7 @@ export const authSlice = createSlice({
         setEmail: (state, action) => {
             state.email = action.payload;
         },
-        setLogOut: (state) => {
+        setLogOut: (state, action) => {
             state.authed = false;
             state.token = "";
             state.user = {};
