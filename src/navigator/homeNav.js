@@ -4,8 +4,32 @@ import HomeScreen from "../screens/home";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import Entypo from "@expo/vector-icons/Entypo";
 import SharedScreen from "../screens/shared";
+import AddFolderScreen from "../screens/add_folder";
+import FolderScreen from "../screens/folder";
+import UploadScreen from "../screens/upload";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
 const Tab = createBottomTabNavigator();
+
+const MainStack = createNativeStackNavigator();
+
+
+const MainNavigator = () => {
+    return (
+        <MainStack.Navigator screenOptions={{ headerShown: false }}>
+            <MainStack.Screen
+                name="Home"
+                component={HomeScreen}
+            />
+            <MainStack.Screen
+                name="AddFolder"
+                component={AddFolderScreen}
+            />
+            <MainStack.Screen name="Folder" component={FolderScreen} />
+            <MainStack.Screen name="Upload" component={UploadScreen} />
+        </MainStack.Navigator>
+    );
+};
 
 function HomeNavigator() {
     const { theme } = useTheme();
@@ -15,11 +39,11 @@ function HomeNavigator() {
                 headerShown: false,
                 tabBarActiveTintColor: theme.colors.primary,
             }}
-            initialRouteName="Home"
+            // initialRouteName="Home"
         >
             <Tab.Screen
-                name="Home"
-                component={HomeScreen}
+                name="MainNav"
+                component={MainNavigator}
                 options={{
                     tabBarLabel: "Home",
                     tabBarIcon: ({ color, size }) => (

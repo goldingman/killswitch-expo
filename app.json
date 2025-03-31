@@ -49,6 +49,5 @@
         }
       ]
     ]
-  },
-  "entryPoint": "./node_modules/expo-router/entry"
+  }
 }

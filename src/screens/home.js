@@ -1,23 +1,54 @@
-import React, { useEffect } from "react";
-import { FlatList, TouchableOpacity, View } from "react-native";
+import React, { useEffect, useCallback, useState } from "react";
+import { BackHandler, FlatList, TouchableOpacity, View, ToastAndroid } from "react-native";
 import { makeStyles, Text, useTheme } from "@rneui/themed";
 import { useDispatch, useSelector } from "react-redux";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import { getFolders } from "../redux/actions/fileAction";
 import Toast from "react-native-toast-message";
 import { shortName } from "../utils/shortName";
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
+import { setLogOut } from "../redux/reducers/authReducer";
+import SimpleLineIcons from '@expo/vector-icons/SimpleLineIcons';
 
-export default function HomeScreen({ navigation }) {
+let gFocused = true;
+export default function HomeScreen() {
     const styles = useStyles();
     const { theme } = useTheme();
     const dispatch = useDispatch();
+    const navigation = useNavigation();
     const folders = useSelector((state) => state.file.folders);
     const user = useSelector((state) => state.auth.user);
+    const [lastBackPressTime, setLastBackPressTime] = useState(0);
+
+    useFocusEffect(
+        useCallback(() => {
+            const onBackPress = () => {
+                const currentTime = new Date().getTime();
+                const timeDifference = currentTime - lastBackPressTime;
+
+                if (timeDifference < 2000) {
+                    BackHandler.exitApp();  // Close the app
+                    return true;
+                }
+
+                setLastBackPressTime(currentTime);
+                ToastAndroid.show('Press back again to exit', ToastAndroid.SHORT);
+
+                return true;
+            };
+
+            BackHandler.addEventListener('hardwareBackPress', onBackPress);
+            return () => {
+                BackHandler.removeEventListener('hardwareBackPress', onBackPress);
+            };
+        }, [lastBackPressTime])
+    );
 
     useEffect(() => {
+        console.log("user :", user)
         if (user) {
             getFolders(dispatch, { user_id: user.id, my_gid: user.my_gid })
-                .then((res) => {})
+                .then((res) => { })
                 .catch((err) => {
                     Toast.show({
                         type: "error",
@@ -26,7 +57,7 @@ export default function HomeScreen({ navigation }) {
                     });
                 });
         }
-    }, [navigation, user]);
+    }, [user]);
 
     const Item = ({ id, name, g_id }) => (
         <TouchableOpacity
@@ -43,7 +74,14 @@ export default function HomeScreen({ navigation }) {
     return (
         <View style={styles.container}>
             <View style={styles.header}>
-                <View style={{ width: 24, height: 24 }}></View>
+                <TouchableOpacity
+                    onPress={() => {
+                        dispatch(setLogOut())
+                        navigation.navigate("Login")
+                    }}
+                >
+                    <SimpleLineIcons name="logout" size={24} color={theme.colors.primary} />
+                </TouchableOpacity>
                 <Text h4 style={{ color: theme.colors.primary }}>
                     My Driver
                 </Text>

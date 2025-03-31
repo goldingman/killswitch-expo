@@ -1,12 +1,11 @@
-import React, { useEffect, useState } from "react";
-import { FlatList, Platform, TouchableOpacity, View } from "react-native";
+import React, { useEffect, useState, useCallback } from "react";
+import { BackHandler, FlatList, Platform, TouchableOpacity, View } from "react-native";
 import { makeStyles, Text, useTheme } from "@rneui/themed";
 import { useDispatch, useSelector } from "react-redux";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import {
     clearDownload,
-    downloadFile,
     getFiles,
 } from "../redux/actions/fileAction";
 import { getIcon } from "../utils/get_icon";
@@ -16,11 +15,14 @@ import * as Sharing from "expo-sharing";
 import Toast from "react-native-toast-message";
 import { shortName } from "../utils/shortName";
 import { BASE_URL } from "../server/server";
+import { useNavigation, useRoute, useFocusEffect } from '@react-navigation/native';
 
-export default function FolderScreen({ navigation, route }) {
+export default function FolderScreen() {
     const styles = useStyles();
     const { theme } = useTheme();
     const dispatch = useDispatch();
+    const route = useRoute();
+    const navigation = useNavigation();
     const files = useSelector((state) => state.file.files);
     const token = useSelector((state) => state.auth.token);
     const [folderId, setFolderId] = useState("");
@@ -29,18 +31,33 @@ export default function FolderScreen({ navigation, route }) {
     const [progress, setProgress] = useState(0);
     const [downloadID, setDownloadID] = useState(null);
 
+    useFocusEffect(
+        useCallback(() => {
+            if (route.name === 'Folder') {
+                const onBackPress = () => {
+                    navigation.navigate("Home")
+                    return true;
+                };
+
+                BackHandler.addEventListener('hardwareBackPress', onBackPress);
+                return () => {
+                    BackHandler.removeEventListener('hardwareBackPress', onBackPress);
+                };
+            }
+        }, [route.name])
+    );
     useEffect(() => {
         if (route.params) {
             setFolderId(route.params.id);
             setFolderName(route.params.name);
             setFolderGId(route.params.g_id);
         }
-    }, [route, navigation]);
+    }, [route]);
 
     useEffect(() => {
         if (folderGId)
             getFiles(dispatch, folderGId)
-                .then((res) => {})
+                .then((res) => { })
                 .catch((err) => {
                     Toast.show({
                         type: "error",
@@ -154,11 +171,7 @@ export default function FolderScreen({ navigation, route }) {
             style={styles.listItem}
             onPress={() => {
                 if (downloadID) return;
-                if (type === "application/vnd.google-apps.folder") {
-                    navigation.navigate("Folder", { id, folderName: title });
-                } else {
-                    getFile(id, title, gId);
-                }
+                getFile(id, title, gId);
             }}
         >
             {getIcon(type, theme)}
@@ -191,7 +204,8 @@ export default function FolderScreen({ navigation, route }) {
             <View style={styles.header}>
                 <TouchableOpacity
                     onPress={() => {
-                        navigation.goBack();
+                        // navigation.goBack();
+                        navigation.navigate("Home")
                     }}
                 >
                     <Ionicons

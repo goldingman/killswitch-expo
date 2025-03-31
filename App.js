@@ -1,9 +1,10 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { createTheme, ThemeProvider } from "@rneui/themed";
 import { Provider } from "react-redux";
-import { storePersisted } from "./src/redux/store";
+import { store, persistor } from "./src/redux/store";
 import Toast from "react-native-toast-message";
 import { AppRoot } from "./src/appRoot";
+import { PersistGate } from "redux-persist/es/integration/react";
 
 const theme = createTheme({
     lightColors: {
@@ -86,17 +87,20 @@ const theme = createTheme({
 });
 
 export default function App() {
+
     return (
-        <Provider store={storePersisted}>
-            <ThemeProvider theme={theme}>
-                <AppRoot />
-            </ThemeProvider>
-            <Toast
-                position="top"
-                autoHide
-                visibilityTime={2000}
-                topOffset={50}
-            />
+        <Provider store={store}>
+            <PersistGate persistor={persistor} loading={null}>
+                <ThemeProvider theme={theme}>
+                    <AppRoot />
+                </ThemeProvider>
+                <Toast
+                    position="top"
+                    autoHide
+                    visibilityTime={2000}
+                    topOffset={50}
+                />
+            </PersistGate>
         </Provider>
     );
 }

@@ -6,7 +6,7 @@ import { setFiles, setFolders, setSharedFiles } from "../reducers/fileReducer";
 
 export const getFolders = (dispatch, data) =>
     new Promise((resolve, reject) => {
-        dispatch(setLoading(true));
+        // dispatch(setLoading(true));
         SERVER.get(`/folders/${data.user_id}`)
             .then((res) => {
                 dispatch(setLoading(false));
@@ -41,7 +41,7 @@ export const createFolder = (dispatch, data) =>
 
 export const getFiles = (dispatch, folderId) =>
     new Promise((resolve, reject) => {
-        dispatch(setLoading(true));
+        // dispatch(setLoading(true));
         SERVER.get(`/files/${folderId}`)
             .then((res) => {
                 dispatch(setLoading(false));
@@ -56,7 +56,7 @@ export const getFiles = (dispatch, folderId) =>
 
 export const getSharedFiles = (dispatch) =>
     new Promise((resolve, reject) => {
-        dispatch(setLoading(true));
+        // dispatch(setLoading(true));
         SERVER.post(`/files/shared`)
             .then((res) => {
                 dispatch(setLoading(false));

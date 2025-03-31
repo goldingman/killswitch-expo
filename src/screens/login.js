@@ -43,7 +43,7 @@ export default function LoginScreen({ navigation }) {
                     Toast.show({
                         type: "error",
                         text1: "Error",
-                        text2: "Something went wrong",
+                        text2: "Login failed",
                     });
                 }
             })

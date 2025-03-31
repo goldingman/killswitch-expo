@@ -9,7 +9,7 @@ import {
 
 export const login = (dispatch, data) =>
     new Promise((resolve, reject) => {
-        setLoading(true);
+        dispatch(setLoading(true));
         SERVER.post("/token", data, {
             headers: {
                 "Content-Type": "application/x-www-form-urlencoded",

@@ -7,8 +7,8 @@ export const handleError = (dispatch, error) => {
         // console.log("error status code : ", error.response);
         // console.log(error.response.headers);
         if (error.response.status === 401) {
-            dispatch(setLogOut());
-            return "Unauthorized. Please login again!";
+            // dispatch(setLogOut());
+            return "Unauthorized.";
         }
         if (error.response.data) {
             return error.response.data;
