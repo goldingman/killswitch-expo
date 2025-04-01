@@ -5,6 +5,7 @@ import {
     TouchableOpacity,
     View,
     ToastAndroid,
+    Platform,
 } from "react-native";
 import { makeStyles, Text, useTheme } from "@rneui/themed";
 import { useDispatch, useSelector } from "react-redux";
@@ -161,7 +162,7 @@ const useStyles = makeStyles((theme) => ({
         alignItems: "flex-end",
         justifyContent: "space-between",
         width: "100%",
-        height: 60,
+        height: Platform.OS === "android" ? 60 : 100,
         backgroundColor: theme.colors.background,
         paddingHorizontal: theme.spacing.lg,
         paddingBottom: theme.spacing.sm,

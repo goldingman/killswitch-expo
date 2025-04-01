@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { TouchableOpacity, View } from "react-native";
+import { Platform, TouchableOpacity, View } from "react-native";
 import { makeStyles, Text, Button, Divider, useTheme } from "@rneui/themed";
 import { useDispatch, useSelector } from "react-redux";
 import Toast from "react-native-toast-message";
@@ -175,7 +175,7 @@ const useStyles = makeStyles((theme) => ({
         alignItems: "flex-end",
         justifyContent: "space-between",
         width: "100%",
-        height: 60,
+        height: Platform.OS === "android" ? 60 : 100,
         backgroundColor: theme.colors.background,
         paddingHorizontal: theme.spacing.lg,
         paddingBottom: theme.spacing.sm,

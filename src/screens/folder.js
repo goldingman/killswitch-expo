@@ -242,7 +242,7 @@ const useStyles = makeStyles((theme) => ({
         alignItems: "flex-end",
         justifyContent: "space-between",
         width: "100%",
-        height: 60,
+        height: Platform.OS === "android" ? 60 : 100,
         backgroundColor: theme.colors.background,
         paddingHorizontal: theme.spacing.lg,
         paddingBottom: theme.spacing.sm,
