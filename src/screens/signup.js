@@ -37,11 +37,10 @@ export default function SignupScreen({ navigation }) {
                 navigation.navigate("HomeNav");
             })
             .catch((err) => {
-                console.log("err : ", err);
                 Toast.show({
                     type: "error",
                     text1: "Error",
-                    text2: "Something went wrong",
+                    text2: err,
                 });
             });
     };
@@ -53,8 +52,9 @@ export default function SignupScreen({ navigation }) {
     return (
         <View style={styles.container}>
             <View style={styles.body}>
-                <Text h2>Sign Up</Text>
-                <Text style={styles.text}>Thanks for reaching out to us.</Text>
+                <Text h2 style={{ marginBottom: 30 }}>
+                    Create your account
+                </Text>
                 <Input
                     placeholder="Username"
                     value={username}

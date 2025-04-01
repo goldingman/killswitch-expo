@@ -1,13 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { View } from "react-native";
-import {
-    makeStyles,
-    Text,
-    Button,
-    Divider,
-    useTheme,
-    Image,
-} from "@rneui/themed";
+import { View, Image } from "react-native";
+import { makeStyles, Text, Button, Divider, useTheme } from "@rneui/themed";
 import { useDispatch } from "react-redux";
 import Toast from "react-native-toast-message";
 import { STYLES } from "../utils/styles";
@@ -15,7 +8,7 @@ import Input from "../components/input";
 import { validateEmail } from "../utils/validate";
 import Checkbox from "expo-checkbox";
 import { login } from "../redux/actions/authAction";
-import AppLogo from "../components/logo";
+import AppLogo from "../../assets/icon_h.png";
 
 export default function LoginScreen({ navigation }) {
     const styles = useStyles();
@@ -59,7 +52,10 @@ export default function LoginScreen({ navigation }) {
     return (
         <View style={styles.container}>
             <View style={styles.body}>
-                <AppLogo />
+                <Image
+                    source={AppLogo}
+                    style={{ objectFit: "contain", width: "100%", height: 150 }}
+                />
                 <Text
                     h3
                     style={{
@@ -68,7 +64,7 @@ export default function LoginScreen({ navigation }) {
                         marginBottom: 20,
                     }}
                 >
-                    Welcome to our app!
+                    Sign in to your account!
                 </Text>
                 <Input
                     placeholder="Email"

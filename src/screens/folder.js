@@ -1,13 +1,16 @@
 import React, { useEffect, useState, useCallback } from "react";
-import { BackHandler, FlatList, Platform, TouchableOpacity, View } from "react-native";
+import {
+    BackHandler,
+    FlatList,
+    Platform,
+    TouchableOpacity,
+    View,
+} from "react-native";
 import { makeStyles, Text, useTheme } from "@rneui/themed";
 import { useDispatch, useSelector } from "react-redux";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import AntDesign from "@expo/vector-icons/AntDesign";
-import {
-    clearDownload,
-    getFiles,
-} from "../redux/actions/fileAction";
+import { clearDownload, getFiles } from "../redux/actions/fileAction";
 import { getIcon } from "../utils/get_icon";
 import * as FileSystem from "expo-file-system";
 import * as Progress from "react-native-progress";
@@ -15,7 +18,11 @@ import * as Sharing from "expo-sharing";
 import Toast from "react-native-toast-message";
 import { shortName } from "../utils/shortName";
 import { BASE_URL } from "../server/server";
-import { useNavigation, useRoute, useFocusEffect } from '@react-navigation/native';
+import {
+    useNavigation,
+    useRoute,
+    useFocusEffect,
+} from "@react-navigation/native";
 
 export default function FolderScreen() {
     const styles = useStyles();
@@ -33,15 +40,18 @@ export default function FolderScreen() {
 
     useFocusEffect(
         useCallback(() => {
-            if (route.name === 'Folder') {
+            if (route.name === "Folder") {
                 const onBackPress = () => {
-                    navigation.navigate("Home")
+                    navigation.navigate("Home");
                     return true;
                 };
 
-                BackHandler.addEventListener('hardwareBackPress', onBackPress);
+                BackHandler.addEventListener("hardwareBackPress", onBackPress);
                 return () => {
-                    BackHandler.removeEventListener('hardwareBackPress', onBackPress);
+                    BackHandler.removeEventListener(
+                        "hardwareBackPress",
+                        onBackPress
+                    );
                 };
             }
         }, [route.name])
@@ -57,7 +67,7 @@ export default function FolderScreen() {
     useEffect(() => {
         if (folderGId)
             getFiles(dispatch, folderGId)
-                .then((res) => { })
+                .then((res) => {})
                 .catch((err) => {
                     Toast.show({
                         type: "error",
@@ -205,7 +215,7 @@ export default function FolderScreen() {
                 <TouchableOpacity
                     onPress={() => {
                         // navigation.goBack();
-                        navigation.navigate("Home")
+                        navigation.navigate("Home");
                     }}
                 >
                     <Ionicons
@@ -260,7 +270,7 @@ const useStyles = makeStyles((theme) => ({
         alignItems: "flex-end",
         justifyContent: "space-between",
         width: "100%",
-        height: 100,
+        height: 60,
         backgroundColor: theme.colors.background,
         paddingHorizontal: theme.spacing.lg,
         paddingBottom: theme.spacing.sm,

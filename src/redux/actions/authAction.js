@@ -28,6 +28,7 @@ export const login = (dispatch, data) =>
                 resolve(res.data);
             })
             .catch((err) => {
+                console.log("err : ", err);
                 dispatch(setLoading(false));
                 reject(handleError(dispatch, err));
             });

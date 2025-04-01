@@ -5,13 +5,13 @@ export const handleError = (dispatch, error) => {
         // The request was made and the server responded with a status code
         // that falls out of the range of 2xx
         // console.log("error status code : ", error.response);
-        // console.log(error.response.headers);
-        if (error.response.status === 401) {
-            // dispatch(setLogOut());
-            return "Unauthorized.";
-        }
+        console.log(error.response);
+        // if (error.response.status === 401) {
+        //     // dispatch(setLogOut());
+        //     return "Unauthorized.";
+        // }
         if (error.response.data) {
-            return error.response.data;
+            return error.response.data?.detail;
         } else {
             return "Something went wrong, Please try again!";
         }

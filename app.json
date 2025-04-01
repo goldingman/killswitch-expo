@@ -1,8 +1,8 @@
 {
   "expo": {
-    "name": "killswitch",
-    "slug": "killswitch",
-    "scheme": "killswitch",
+    "name": "Goliath",
+    "slug": "goliath",
+    "scheme": "goliath",
     "owner": "goldingman",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -15,24 +15,17 @@
       "backgroundColor": "#ffffff"
     },
     "ios": {
-      "supportsTablet": true,
-      "googleServicesFile": "./GoogleService-Info.plist",
-      "bundleIdentifier": "com.killswitch"
+      "supportsTablet": false,
+      "bundleIdentifier": "com.goliath"
     },
     "android": {
-      "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
-      },
-      "googleServicesFile": "./google-services.json",
-      "package": "com.killswitch",
+      "package": "com.goliath",
       "versionCode": 1
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
     "extra": {
-      "googleClientId": "193918051508-a9o0j3j6u62envb7fbfcsin547f744l2.apps.googleusercontent.com",
       "router": {
         "origin": false
       },
