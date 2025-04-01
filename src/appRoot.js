@@ -10,6 +10,7 @@ export const AppRoot = () => {
     const token = useSelector((state) => state.auth.token);
 
     useEffect(() => {
+        console.log("token : ", token);
         if (token) {
             SERVER.defaults.headers.common["Authorization"] = `Bearer ${token}`;
         }

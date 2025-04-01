@@ -28,7 +28,7 @@ export default function LoginScreen({ navigation }) {
         })
             .then((res) => {
                 if (res) {
-                    navigation.navigate("HomeNav");
+                    // navigation.navigate("HomeNav");
                 } else {
                     Toast.show({
                         type: "error",

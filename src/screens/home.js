@@ -13,8 +13,9 @@ import { getFolders } from "../redux/actions/fileAction";
 import Toast from "react-native-toast-message";
 import { shortName } from "../utils/shortName";
 import { useNavigation, useFocusEffect } from "@react-navigation/native";
-import { setLogOut } from "../redux/reducers/authReducer";
 import SimpleLineIcons from "@expo/vector-icons/SimpleLineIcons";
+import { setLogOut } from "../redux/reducers/authReducer";
+import SERVER from "../server/server";
 
 export default function HomeScreen() {
     const styles = useStyles();
@@ -23,6 +24,7 @@ export default function HomeScreen() {
     const navigation = useNavigation();
     const folders = useSelector((state) => state.file.folders);
     const user = useSelector((state) => state.auth.user);
+    const token = useSelector((state) => state.auth.token);
     const [lastBackPressTime, setLastBackPressTime] = useState(0);
 
     useFocusEffect(
@@ -56,19 +58,33 @@ export default function HomeScreen() {
     );
 
     useEffect(() => {
-        console.log("user :", user);
-        if (user) {
-            getFolders(dispatch, { user_id: user.id, my_gid: user.my_gid })
-                .then((res) => {})
-                .catch((err) => {
-                    Toast.show({
-                        type: "error",
-                        text1: "Error",
-                        text2: err,
+        if (user && token) {
+            if (SERVER.defaults.headers.common["Authorization"]) {
+                getFolders(dispatch, { user_id: user.id, my_gid: user.my_gid })
+                    .then((res) => {})
+                    .catch((err) => {
+                        Toast.show({
+                            type: "error",
+                            text1: "Error",
+                            text2: err,
+                        });
                     });
-                });
+            } else {
+                SERVER.defaults.headers.common[
+                    "Authorization"
+                ] = `Bearer ${token}`;
+                getFolders(dispatch, { user_id: user.id, my_gid: user.my_gid })
+                    .then((res) => {})
+                    .catch((err) => {
+                        Toast.show({
+                            type: "error",
+                            text1: "Error",
+                            text2: err,
+                        });
+                    });
+            }
         }
-    }, [user]);
+    }, [user, token]);
 
     const Item = ({ id, name, g_id }) => (
         <TouchableOpacity
@@ -87,9 +103,7 @@ export default function HomeScreen() {
             <View style={styles.header}>
                 <TouchableOpacity
                     onPress={() => {
-                        //
-                        navigation.navigate("Login");
-                        // dispatch(setLogOut());
+                        dispatch(setLogOut());
                     }}
                 >
                     <SimpleLineIcons
@@ -123,6 +137,7 @@ export default function HomeScreen() {
                     ListFooterComponent={
                         <View style={{ width: "100%", height: 150 }} />
                     }
+                    removeClippedSubviews={false}
                 />
             </View>
         </View>

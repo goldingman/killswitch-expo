@@ -182,6 +182,7 @@ export default function SharedScreen({ navigation }) {
                     ListFooterComponent={
                         <View style={{ width: "100%", height: 150 }} />
                     }
+                    removeClippedSubviews={false}
                 />
             </View>
         </View>

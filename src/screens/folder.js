@@ -1,11 +1,5 @@
-import React, { useEffect, useState, useCallback } from "react";
-import {
-    BackHandler,
-    FlatList,
-    Platform,
-    TouchableOpacity,
-    View,
-} from "react-native";
+import React, { useEffect, useState } from "react";
+import { FlatList, Platform, TouchableOpacity, View } from "react-native";
 import { makeStyles, Text, useTheme } from "@rneui/themed";
 import { useDispatch, useSelector } from "react-redux";
 import Ionicons from "@expo/vector-icons/Ionicons";
@@ -18,11 +12,7 @@ import * as Sharing from "expo-sharing";
 import Toast from "react-native-toast-message";
 import { shortName } from "../utils/shortName";
 import { BASE_URL } from "../server/server";
-import {
-    useNavigation,
-    useRoute,
-    useFocusEffect,
-} from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
 
 export default function FolderScreen() {
     const styles = useStyles();
@@ -37,25 +27,6 @@ export default function FolderScreen() {
     const [folderGId, setFolderGId] = useState("");
     const [progress, setProgress] = useState(0);
     const [downloadID, setDownloadID] = useState(null);
-
-    useFocusEffect(
-        useCallback(() => {
-            if (route.name === "Folder") {
-                const onBackPress = () => {
-                    navigation.navigate("Home");
-                    return true;
-                };
-
-                BackHandler.addEventListener("hardwareBackPress", onBackPress);
-                return () => {
-                    BackHandler.removeEventListener(
-                        "hardwareBackPress",
-                        onBackPress
-                    );
-                };
-            }
-        }, [route.name])
-    );
 
     useEffect(() => {
         if (route.params) {
@@ -215,8 +186,7 @@ export default function FolderScreen() {
             <View style={styles.header}>
                 <TouchableOpacity
                     onPress={() => {
-                        // navigation.goBack();
-                        navigation.navigate("Home");
+                        navigation.goBack();
                     }}
                 >
                     <Ionicons
@@ -248,6 +218,7 @@ export default function FolderScreen() {
                         />
                     )}
                     keyExtractor={(item) => item.id}
+                    removeClippedSubviews={false}
                 />
             </View>
         </View>

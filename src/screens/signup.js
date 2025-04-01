@@ -34,7 +34,7 @@ export default function SignupScreen({ navigation }) {
             password: password,
         })
             .then((res) => {
-                navigation.navigate("HomeNav");
+                // navigation.navigate("HomeNav");
             })
             .catch((err) => {
                 Toast.show({

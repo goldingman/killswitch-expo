@@ -5,29 +5,18 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { useSelector } from "react-redux";
 import LoginScreen from "../screens/login";
 import SignupScreen from "../screens/signup";
-import HomeNavigator from "./homeNav";
 import WelcomeScreen from "../screens/welcome";
 import { useTheme } from "@rneui/themed";
 import SharedScreen from "../screens/shared";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import Entypo from "@expo/vector-icons/Entypo";
+import HomeScreen from "../screens/home";
+import FolderScreen from "../screens/folder";
+import AddFolderScreen from "../screens/add_folder";
+import UploadScreen from "../screens/upload";
 
 const Stack = createNativeStackNavigator();
-const AuthStack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
-
-const AuthNavigator = () => {
-    return (
-        <AuthStack.Navigator
-            initialRouteName="Welcome"
-            screenOptions={{ headerShown: false }}
-        >
-            <AuthStack.Screen name="Welcome" component={WelcomeScreen} />
-            <AuthStack.Screen name="Login" component={LoginScreen} />
-            <AuthStack.Screen name="Signup" component={SignupScreen} />
-        </AuthStack.Navigator>
-    );
-};
 
 const TabNavigator = () => {
     const { theme } = useTheme();
@@ -38,11 +27,11 @@ const TabNavigator = () => {
                 headerShown: false,
                 tabBarActiveTintColor: theme.colors.primary,
             }}
-            initialRouteName="HomeNavd"
+            initialRouteName="Home"
         >
             <Tab.Screen
-                name="HomeNavd"
-                component={HomeNavigator}
+                name="Home"
+                component={HomeScreen}
                 options={{
                     tabBarLabel: "Home",
                     tabBarIcon: ({ color, size }) => (
@@ -66,20 +55,33 @@ const TabNavigator = () => {
 
 const RootNavigator = () => {
     const authed = useSelector((state) => state.auth.authed);
+    const token = useSelector((state) => state.auth.token);
     console.log("authed : ", authed);
 
     return (
         <NavigationContainer>
-            {/* {authed ? (
-                    <Stack.Screen name="TabNav" component={TabNavigator} />
-                ) : (
-                    <Stack.Screen name="AuthNav" component={AuthNavigator} />
-                )} */}
             <Stack.Navigator screenOptions={{ headerShown: false }}>
-                <Stack.Screen name="Welcome" component={WelcomeScreen} />
-                <Stack.Screen name="Login" component={LoginScreen} />
-                <Stack.Screen name="Signup" component={SignupScreen} />
-                <Stack.Screen name="HomeNav" component={TabNavigator} />
+                {authed && token ? (
+                    <>
+                        <Stack.Screen name="HomeNav" component={TabNavigator} />
+
+                        <Stack.Screen name="Folder" component={FolderScreen} />
+                        <Stack.Screen
+                            name="AddFolder"
+                            component={AddFolderScreen}
+                        />
+                        <Stack.Screen name="Upload" component={UploadScreen} />
+                    </>
+                ) : (
+                    <>
+                        <Stack.Screen
+                            name="Welcome"
+                            component={WelcomeScreen}
+                        />
+                        <Stack.Screen name="Login" component={LoginScreen} />
+                        <Stack.Screen name="Signup" component={SignupScreen} />
+                    </>
+                )}
             </Stack.Navigator>
         </NavigationContainer>
     );
